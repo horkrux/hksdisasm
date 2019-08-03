@@ -162,7 +162,7 @@ int parse_function() {
 	}
 
 	if (num_upvalues) {
-		if (!num_locals) fseek(hks_file, 4, SEEK_CUR);
+		//if (!num_locals) fseek(hks_file, 4, SEEK_CUR);
 
 		upvalues = malloc(4 * num_upvalues);
 
@@ -309,7 +309,7 @@ int parse_instructions(int* instructions, int num_instructions) {
 			break;
 		case HKS_OPCODE_SETFIELD:
 			getABC(curr_inst, &A, &B, &C);
-			constant = getK(C, 1, 0);
+			constant = getK(B, 1, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_SETTABLE_S:
@@ -345,6 +345,10 @@ int parse_instructions(int* instructions, int num_instructions) {
 				printf("\t %d \t [%d] \t %-20s %d \t; to %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], (short)sBx, i + 2);
 			}
 
+			break;
+		case HKS_OPCODE_GETUPVAL:
+			getABC(curr_inst, &A, &B, &C);
+			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_ADD:
 			getABC(curr_inst, &A, &B, &C);

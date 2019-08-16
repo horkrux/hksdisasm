@@ -249,22 +249,32 @@ int parse_instructions(int* instructions, int num_instructions) {
 		int Ax;
 		int Bx;
 		int sBx;
+		int sZero = 0;
 
 		switch (opcode) {
+		case HKS_OPCODE_GETFIELD:
+			getABC(curr_inst, &A, &B, &C, &sZero);
+			constant = getK(C, 1, 0);
+			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			break;
 		case HKS_OPCODE_TEST:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_CALL_I:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_EQ:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -272,15 +282,19 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_MOVE:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_SELF:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -288,15 +302,19 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_RETURN:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_GETTABLE_S:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -304,20 +322,20 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_LOADBOOL:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_SETFIELD:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 1, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_SETTABLE_S:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_SETTABLE_S_BK:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 0, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
@@ -327,7 +345,7 @@ int parse_instructions(int* instructions, int num_instructions) {
 			printf("\t %d \t [%d] \t %-20s %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, Bx, constant);
 			break;
 		case HKS_OPCODE_LOADNIL:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_SETGLOBAL:
@@ -347,15 +365,23 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_GETUPVAL:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
+			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
+			break;
+		case HKS_OPCODE_SETUPVAL:
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_ADD:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -363,16 +389,20 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_ADD_BK:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 0, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_SUB:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -380,16 +410,20 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_SUB_BK:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 0, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_MUL:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -397,16 +431,20 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_MUL_BK:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 0, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_DIV:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -414,16 +452,20 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_DIV_BK:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 0, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_MOD:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -431,16 +473,20 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_MOD_BK:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 0, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_POW:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -448,28 +494,32 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_POW_BK:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 0, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_NEWTABLE:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_UNM:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_LEN:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_LT:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -477,16 +527,20 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_LT_BK:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 0, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_LE:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 
 			if (C < 0) {
 				constant = getK(C, 0, 0);
 				printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			}
+			else if (sZero) {
+				constant = getK(C, 0, 0);
+				printf("\t %d \t [%d] \t %-20s %d %d -%d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			}
 			else {
 				printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
@@ -494,12 +548,12 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_LE_BK:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(B, 0, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_CONCAT:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_FORPREP:
@@ -527,7 +581,7 @@ int parse_instructions(int* instructions, int num_instructions) {
 
 			break;
 		case HKS_OPCODE_SETLIST:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_CLOSURE:
@@ -535,16 +589,25 @@ int parse_instructions(int* instructions, int num_instructions) {
 			printf("\t %d \t [%d] \t %-20s %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, Bx);
 			break;
 		case HKS_OPCODE_VARARG:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_CALL_I_R1:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
+			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
+			break;
+		case HKS_OPCODE_SETUPVAL_R1:
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			printf("\t %d \t [%d] \t %-20s %d %d %d\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C);
 			break;
 		case HKS_OPCODE_GETFIELD_R1:
-			getABC(curr_inst, &A, &B, &C);
+			getABC(curr_inst, &A, &B, &C, &sZero);
 			constant = getK(C, 0, 0);
+			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
+			break;
+		case HKS_OPCODE_SETFIELD_R1:
+			getABC(curr_inst, &A, &B, &C, &sZero);
+			constant = getK(C, 1, 0);
 			printf("\t %d \t [%d] \t %-20s %d %d %d \t; %s\n", i + 1, line_numbers[i], hks_opcodes[opcode], A, B, C, constant);
 			break;
 		case HKS_OPCODE_DATA:
@@ -617,13 +680,16 @@ int print_upvalues(int num_upvalues) {
 	return 0;
 }
 
-void getABC(int curr_inst, int* A, int* B, int* C) {
+void getABC(int curr_inst, int* A, int* B, int* C, int* sZero) {
 	*A = curr_inst & 0xff;
 	*C = (curr_inst & 0x1ff00) >> 8;
 	*B = (curr_inst & 0x1fe0000) >> 17;
 
 	if (*B & 0x100) *B = -(*B & 0xff);
-	if (*C & 0x100) *C = -(*C & 0xff);
+	if (*C & 0x100) {
+		if (*C == 0x100) *sZero = 1;
+		*C = -(*C & 0xff);
+	}
 }
 
 void getABx(int curr_inst, int* A, int* Bx) {

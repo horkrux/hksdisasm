@@ -105,7 +105,7 @@ int print_constants(int);
 int print_locals(int);
 int print_upvalues(int);
 int build_constant_list(int);
-void getABC(int, int*, int*, int*);
+void getABC(int, int*, int*, int*, int*);
 void getABx(int, int*, int*);
 char* getK(int, int, int);
 
